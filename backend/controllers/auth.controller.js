@@ -13,7 +13,7 @@ export const register = asyncHandler(async function register(req, res) {
   const { name, email, password } = req.body;
   const { user, token } = await registerUser({ name, email, password });
   // Log before setting cookie so we can verify it in Render logs.
-  log.debug("Setting auth cookie for new user", {
+  log.info("Setting auth cookie for new user", {
     user: user.id,
     sameSite: authCookieOptions.sameSite,
     secure: authCookieOptions.secure,
@@ -30,7 +30,7 @@ export const login = asyncHandler(async function login(req, res) {
   const { email, password } = req.body;
   const { user, token } = await loginUser({ email, password });
   // Log cookie set attempt for debugging in production logs.
-  log.debug("Setting auth cookie on login", {
+  log.info("Setting auth cookie on login", {
     user: user.id,
     sameSite: authCookieOptions.sameSite,
     secure: authCookieOptions.secure,
