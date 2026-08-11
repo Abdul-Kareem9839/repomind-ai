@@ -1,0 +1,25 @@
+{
+  "watch": [
+    "server.js",
+    "app.js",
+    "config",
+    "controllers",
+    "middlewares",
+    "models",
+    "routes",
+    "services",
+    "utils",
+    "package.json",
+    ".env"
+  ],
+  "ignore": [
+    "uploads/**",
+    "temp/**",
+    "chat-history/**",
+    "node_modules/**",
+    ".git/**",
+    ".tmp_*",
+    ".direct-*"
+  ],
+  "ext": "js,json"
+}

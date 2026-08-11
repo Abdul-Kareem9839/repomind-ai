@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+/dist/
+/build/
+**/dist/
+**/build/
+
+# Frontend caches
+.vite/
+.parcel-cache/
+.next/
+.nuxt/
+.cache/
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Runtime / uploads
+uploads/
+backend/uploads/
+backend/temp/
+temp/
+*.zip
+*.tgz
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Test / coverage output
+coverage/
+.nyc_output/
+
+# Misc security
+*.pem
+*.key
+*.crt
