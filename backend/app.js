@@ -17,7 +17,7 @@ const app = express();
 // When running behind a proxy (Render, Vercel, etc.) trust the proxy
 // so Express can read `X-Forwarded-*` headers (important for rate-limit
 // and secure cookie detection).
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(
