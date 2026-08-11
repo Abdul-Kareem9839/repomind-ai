@@ -1,32 +1,40 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import cookieParser from 'cookie-parser';
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import cookieParser from "cookie-parser";
 
-import { config } from './config/env.js';
-import apiRoutes from './routes/index.js';
-import { apiLimiter } from './middlewares/rateLimiter.middleware.js';
-import { errorHandler, notFoundHandler } from './middlewares/errorHandler.middleware.js';
+import { config } from "./config/env.js";
+import apiRoutes from "./routes/index.js";
+import { apiLimiter } from "./middlewares/rateLimiter.middleware.js";
+import {
+  errorHandler,
+  notFoundHandler,
+} from "./middlewares/errorHandler.middleware.js";
 
 const app = express();
+
+// When running behind a proxy (Render, Vercel, etc.) trust the proxy
+// so Express can read `X-Forwarded-*` headers (important for rate-limit
+// and secure cookie detection).
+app.set("trust proxy", true);
 
 app.use(helmet());
 app.use(
   cors({
     origin: config.clientUrl,
-    credentials: true
-  })
+    credentials: true,
+  }),
 );
-app.use(express.json({ limit: '2mb' }));
-app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 app.use(cookieParser());
 
-if (config.env !== 'test') {
-  app.use(morgan(config.env === 'production' ? 'combined' : 'dev'));
+if (config.env !== "test") {
+  app.use(morgan(config.env === "production" ? "combined" : "dev"));
 }
 
-app.use('/api', apiLimiter, apiRoutes);
+app.use("/api", apiLimiter, apiRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
