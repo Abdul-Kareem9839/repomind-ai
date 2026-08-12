@@ -87,6 +87,11 @@ export const config = {
   chroma: {
     url: process.env.CHROMA_URL || "http://localhost:8000",
     collectionPrefix: process.env.CHROMA_COLLECTION_PREFIX || "repomind",
+    cloud: {
+      apiKey: process.env.CHROMA_API_KEY || "",
+      tenant: process.env.CHROMA_TENANT || "",
+      database: process.env.CHROMA_DATABASE || "",
+    },
   },
 
   localEmbedding: {
