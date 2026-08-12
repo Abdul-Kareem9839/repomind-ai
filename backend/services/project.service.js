@@ -15,6 +15,7 @@ import {
 import { parseRepository } from "./parser/fileParser.service.js";
 import { analyzeRepository } from "./parser/repositoryAnalyzer.service.js";
 import { indexRepository } from "./rag/indexer.service.js";
+import { deleteProjectChunks } from "./rag/fileChunk.service.js";
 import { deleteCollection } from "./vector/vectorStore.service.js";
 import { buildCollectionName } from "../utils/collectionName.js";
 
@@ -91,6 +92,7 @@ async function runIngestionPipeline(project) {
     const chromaCollectionName = buildCollectionName(project._id);
 
     const { chunkCount } = await indexRepository({
+      projectId: project._id,
       collectionName: chromaCollectionName,
       documents,
       repositorySummary,
@@ -225,6 +227,7 @@ export async function deleteProject({ ownerId, projectId }) {
   if (project.chromaCollectionName) {
     await deleteCollection(project.chromaCollectionName);
   }
+  await deleteProjectChunks(project._id);
 
   await project.deleteOne();
   return project;

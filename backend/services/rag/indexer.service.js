@@ -1,6 +1,7 @@
 import { chunkRepository } from './chunker.service.js';
 import { embedTexts } from '../ai/embeddings.service.js';
-import { upsertChunks } from '../vector/vectorStore.service.js';
+import { upsertChunks, deleteCollection } from '../vector/vectorStore.service.js';
+import { replaceProjectChunks } from './fileChunk.service.js';
 import { estimateTokensForTexts } from '../../utils/tokenEstimator.js';
 import { createLogger } from '../../utils/logger.js';
 
@@ -47,7 +48,7 @@ function buildSummaryChunkContent(repositorySummary) {
  * ARCHITECTURE.md §3). This is the step that finally makes a project queryable
  * — callers should flip Project.status to 'ready' only after this resolves.
  */
-export async function indexRepository({ collectionName, documents, repositorySummary }) {
+export async function indexRepository({ projectId, collectionName, documents, repositorySummary }) {
   const codeChunks = chunkRepository(documents);
 
   const summaryItem = {
@@ -73,6 +74,20 @@ export async function indexRepository({ collectionName, documents, repositorySum
 
   const itemsWithEmbeddings = allItems.map((item, idx) => ({ ...item, embedding: vectors[idx] }));
 
+  // MongoDB is the source of truth for chunk content — persist it here, then
+  // ship only embeddings + lightweight metadata to Chroma below (see
+  // services/vector/vectorStore.service.js and services/rag/fileChunk.service.js
+  // for why: Chroma Cloud's free tier quotas the 'documents' field, and the
+  // full source-code content used to be sent there). replaceProjectChunks
+  // deletes any chunks left over from a previous index of this project first,
+  // so re-indexing can't mix old and new content.
+  await replaceProjectChunks(projectId, itemsWithEmbeddings);
+
+  // Likewise recreate the Chroma collection from scratch rather than upserting
+  // over it, so a re-index where the new chunk set is smaller (or ids shifted
+  // because files moved) can't leave stale vectors behind pointing at content
+  // that no longer exists in MongoDB.
+  await deleteCollection(collectionName);
   await upsertChunks(collectionName, itemsWithEmbeddings);
 
   log.info(`Indexed ${allItems.length} chunks into ${collectionName}`);

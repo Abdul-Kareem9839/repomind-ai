@@ -5,9 +5,10 @@ let client = null;
 
 /**
  * Single shared ChromaDB client. We always pass our own precomputed local
- * embeddings to add()/query() calls (see services/vector/vectorStore.service.js),
- * so no embeddingFunction is configured here — Chroma is used purely as a vector
- * store, not as the thing that generates the vectors.
+ * embeddings to add()/upsert()/query() calls (see
+ * services/vector/vectorStore.service.js, which also sets an explicit no-op
+ * embeddingFunction on every collection it opens) — Chroma is used purely as
+ * a vector store, not as the thing that generates the vectors.
  *
  * Uses Chroma Cloud (CloudClient) when CHROMA_API_KEY/CHROMA_TENANT/CHROMA_DATABASE
  * are set — this is what production (Render) should use, since Chroma Cloud is
